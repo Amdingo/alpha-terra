@@ -1,0 +1,11 @@
+---
+- name: Install
+  hosts: localhost
+    connection: local
+    sudo: yes
+    tasks:
+    - name: download alpha-stack repo
+    - git:
+      repo: ssh://git@github.com/alpha-stack/alpha-stack.git
+      dest: /opt/alpha-stack/
+      refspec: '+refs/heads/*'

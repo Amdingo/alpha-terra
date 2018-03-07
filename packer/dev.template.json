@@ -1,0 +1,50 @@
+{
+  "variables": {
+    "build_count": "{{env `build_count`}}",
+    "branch": "{{env `branch`}}",
+    "s3path": "{{env `s3path`}}",
+    "port": "{{env `port`}}"
+  },
+  "builders": [{
+    "type": "amazon-ebs",
+    "region": "us-east-1",
+    "source_ami": "ami-ddbd42a0",
+    "instance_type": "t2.medium",
+    "ssh_username": "alphastack",
+    "ami_name": "alphastack-dev-{{ user `branch` | clean_ami_name }}-{{ user `build_count` }}",
+    "iam_instance_profile": "packer",
+    "spot_price": ".0145",
+    "ssh_keypair_name": "alphastack-devops-keypair",
+    "ssh_private_key_file": "/home/ubuntu/.ssh/alphastack-devops-keypair.pem",
+    "tags": {
+      "name": "AlphaStack Server image {{ user `branch` }}",
+      "build_count": "{{ user `build_count` }}",
+      "branch": "{{ user `branch` }}",
+      "server": "alphastack"
+    }
+  }],
+  "provisioners": [
+    {
+      "type": "file",
+      "source": "./build_tools/files/datadog.conf",
+      "destination": "/home/alphastack/files/datadog.conf"
+    },
+    {
+      "type": "shell",
+      "environment_vars": [
+        "build_count={{ user `build_count` }}",
+        "branch={{ user `branch` }}",
+        "s3path={{ user `s3path` }}",
+        "port={{ user `port` }}"
+      ],
+      "script": "./build_tools/scripts/init.sh"
+    }
+  ],
+  "post-processors": [
+    {
+      "type": "manifest",
+      "output": "packer.manifest.json",
+      "strip_path": true
+    }
+  ]
+}

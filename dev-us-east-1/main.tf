@@ -172,7 +172,7 @@ resource "aws_security_group" "alb" {
 # Our default security group to access
 # the public instances over SSH
 resource "aws_security_group" "bastion" {
-  name        = "terraform_example"
+  name        = "as_prod_bastion"
   description = "Terraform Bastion Security Group"
   vpc_id      = "${data.aws_vpc.default.id}"
 
@@ -389,7 +389,7 @@ resource "aws_instance" "bastion" {
   # Lookup the correct AMI based on the region
   # we specified
   # ami = "${lookup(var.aws_amis, var.aws_region)}"
-  ami = "${var.ubuntu_ami}"
+  ami = "${var.bastion_ami}"
 
   # The name of our SSH keypair we created above.
   key_name = "${aws_key_pair.auth.id}"

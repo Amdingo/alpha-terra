@@ -37,9 +37,9 @@ variable "igw_id" {
 # amis
 variable "as_dev_ami" {}
 
-variable "ubuntu_ami" {
-  description = "ami for the 16.04 Ubuntu image"
-  default     = "ami-66506c1c"
+variable "bastion_ami" {
+  description = "ami for the bastion image"
+  default     = "ami-7b00f806"
 }
 
 # route 53

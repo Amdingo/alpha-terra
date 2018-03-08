@@ -39,7 +39,7 @@ variable "as_dev_ami" {}
 
 variable "bastion_ami" {
   description = "ami for the bastion image"
-  default     = "ami-7b00f806"
+  default     = "ami-cb0df5b6"
 }
 
 # route 53

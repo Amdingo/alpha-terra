@@ -57,6 +57,17 @@ resource "aws_eip" "nat" {
   }
 }
 
+# Creates an EIP for the Bastion Server because I'm sick of modifying my putty session
+resource "aws_eip" "bastion" {
+  vpc = true
+}
+
+# And allocate it to the bastion server
+resource "aws_eip_association" "bastion" {
+  instance_id   = "${aws_instance.bastion.id}"
+  allocation_id = "${aws_eip.bastion.id}"
+}
+
 # Create the NAT Gateway
 resource "aws_nat_gateway" "as_gw" {
   depends_on = ["data.aws_internet_gateway.default"]

@@ -1,3 +1,10 @@
+terraform {
+  backend "atlas" {
+    name = "AlphaStack/dev-us-east-1"
+    access_token = "mimcmOLAnRDFPQ.atlasv1.C4s8XuKzCnvHNAPw2jJVqOOWp3ykGyN1zOdayXUNXjyplncopsuLrieUAKBwC2eaHjg"
+  }
+}
+
 # Specify the provider and access details
 provider "aws" {
   region = "${var.aws_region}"
@@ -139,7 +146,8 @@ resource "aws_security_group" "alb" {
   vpc_id      = "${data.aws_vpc.default.id}"
 
   tags {
-    name = "terraform_alb_security_group"
+    Name        = "AlphaStack ALB Group"
+    AppVersion  = "Beta"
   }
 
   # HTTP access from anywhere
@@ -174,7 +182,8 @@ resource "aws_security_group" "bastion" {
   vpc_id      = "${data.aws_vpc.default.id}"
 
   tags {
-    name = "as_bastion_sg"
+    Name        = "AlphaStack Bastion Group"
+    AppVersion  = "Beta"
   }
 
   # SSH access from anywhere
@@ -202,7 +211,8 @@ resource "aws_security_group" "as_private_sg" {
   vpc_id      = "${data.aws_vpc.default.id}"
 
   tags {
-    Name = "A|S Private Security Group"
+    Name        = "AlphaStack Private Group"
+    AppVersion  = "Beta"
   }
 
   # HTTP access from the vpc
@@ -247,10 +257,15 @@ resource "aws_security_group" "as_private_sg" {
 
 # Application Load Balancer for Web Server
 resource "aws_lb" "web" {
-  name            = "terraform-dev-alb"
+  name            = "Beta-AlphaStack-Production"
   internal        = false
   subnets         = ["${aws_subnet.default.id}", "${aws_subnet.default_2.id}"]
   security_groups = ["${aws_security_group.alb.id}"]
+
+  tags {
+    Name = "AlphaStack Production ALB"
+    AppVersion = "Beta"
+  }
 }
 
 # HTTPS
@@ -267,7 +282,7 @@ resource "aws_lb_listener" "web_https" {
   }
 }
 
-# HTTP TODO: Why?
+# HTTP This points to an NGINX instance that redirs to HTTPS
 resource "aws_lb_listener" "web_http" {
   load_balancer_arn = "${aws_lb.web.arn}"
   port              = "80"
@@ -286,7 +301,8 @@ resource "aws_lb_target_group" "web_https" {
   vpc_id = "${data.aws_vpc.default.id}"
 
   tags {
-    name = "terraform-alb-https-target-group"
+    Name = "AlphaStack Production HTTPS"
+    AppVersion = "Beta"
   }
 }
 
@@ -302,7 +318,8 @@ resource "aws_lb_target_group" "web_http" {
   }
 
   tags {
-    name = "terraform-alb-http-target-group"
+    Name = "AlphaStack Production HTTP"
+    AppVersion = "Beta"
   }
 }
 
@@ -390,7 +407,8 @@ resource "aws_instance" "bastion" {
 
   # Name it in the tags
   tags {
-    Name = "terraform bastion server"
+    Name        = "AlphaStack Production Bastion Server"
+    AppVersion  = "Beta"
   }
 
 }
@@ -434,11 +452,18 @@ resource "aws_autoscaling_group" "as_asg" {
 
   launch_configuration = "${aws_launch_configuration.as_web_lc.name}"
 
-  tag {
-    key                 = "Name"
-    value               = "as_asg-instance"
-    propagate_at_launch = true
-  }
+  tags = [
+    {
+      key                 = "Name"
+      value               = "AlphaStack Production Web/API Instance"
+      propagate_at_launch = true
+    },
+    {
+      key                 = "AppVersion"
+      value               = "Beta"
+      propagate_at_launch = true
+    }
+  ]
 
   lifecycle {
     create_before_destroy = true

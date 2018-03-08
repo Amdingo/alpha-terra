@@ -1,10 +1,3 @@
-terraform {
-  backend "atlas" {
-    name = "AlphaStack/dev-us-east-1"
-    access_token = "mimcmOLAnRDFPQ.atlasv1.C4s8XuKzCnvHNAPw2jJVqOOWp3ykGyN1zOdayXUNXjyplncopsuLrieUAKBwC2eaHjg"
-  }
-}
-
 # Specify the provider and access details
 provider "aws" {
   region = "${var.aws_region}"

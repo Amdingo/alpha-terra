@@ -31,6 +31,41 @@ data "aws_vpc" "default" {
   id = "${var.vpc_id}"
 }
 
+# The old VPC to peer to
+data "aws_vpc" "old" {
+  id = "${var.old_vpc}"
+}
+
+# The old VPC's route table that we'll attach the peering route to
+data "aws_route_table" "old_vpc_route_table" {
+  route_table_id = "${var.old_vpc_route_table}"
+}
+
+# Sets up the peering connection
+resource "aws_vpc_peering_connection" "peer" {
+  peer_vpc_id = "${data.aws_vpc.old.id}"
+  vpc_id      = "${data.aws_vpc.default.id}"
+  auto_accept = true
+
+  accepter {
+    allow_remote_vpc_dns_resolution = true
+  }
+
+  requester {
+    allow_remote_vpc_dns_resolution = true
+  }
+
+  tags {
+    Name = "Old to Prod VPC Connection"
+  }
+}
+
+resource "aws_route" "old-to-new-peer" {
+  route_table_id            = "${data.aws_route_table.old_vpc_route_table.id}"
+  destination_cidr_block    = "10.20.0.0/16"
+  vpc_peering_connection_id = "${aws_vpc_peering_connection.peer.id}"
+}
+
 # Provides the default route table for the VPC as a resource
 resource "aws_default_route_table" "rt" {
   default_route_table_id = "${var.route_table_id}"
@@ -57,15 +92,10 @@ resource "aws_eip" "nat" {
   }
 }
 
-# Creates an EIP for the Bastion Server because I'm sick of modifying my putty session
-resource "aws_eip" "bastion" {
-  vpc = true
-}
-
 # And allocate it to the bastion server
 resource "aws_eip_association" "bastion" {
   instance_id   = "${aws_instance.bastion.id}"
-  allocation_id = "${aws_eip.bastion.id}"
+  allocation_id = "${data.aws_eip.bastion_eip.id}"
 }
 
 # Create the NAT Gateway
@@ -81,6 +111,11 @@ resource "aws_route_table" "public" {
   route {
     cidr_block = "0.0.0.0/0"
     gateway_id = "${data.aws_internet_gateway.default.id}"
+  }
+
+  route {
+    cidr_block = "172.31.0.0/16"
+    vpc_peering_connection_id = "${aws_vpc_peering_connection.peer.id}"
   }
 
   tags {
@@ -383,6 +418,10 @@ resource "aws_alb_listener_rule" "as_http_listener_rule" {
 resource "aws_key_pair" "auth" {
   key_name   = "${var.key_name}"
   public_key = "${var.public_key}"
+}
+
+data "aws_eip" "bastion_eip" {
+  public_ip = "52.200.118.47"
 }
 
 resource "aws_instance" "bastion" {

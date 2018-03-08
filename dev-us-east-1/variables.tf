@@ -19,6 +19,16 @@ variable "vpc_id" {
   default     = "vpc-4b16b330"
 }
 
+variable "old_vpc" {
+  description = "The old main VPC, this will go away soon"
+  default     = "vpc-c1c690a4"
+}
+
+variable "old_vpc_route_table" {
+  description = "The old VPC's route table to add the peering connection to"
+  default     = "rtb-98517cfd"
+}
+
 variable "cidr_prefix" {
   description = "Probably the first two octects of ur VPC"
   default     = "10.20"
@@ -40,6 +50,10 @@ variable "as_dev_ami" {}
 variable "bastion_ami" {
   description = "ami for the bastion image"
   default     = "ami-cb0df5b6"
+}
+
+variable "bastion_ip" {
+  default = "52.200.118.47"
 }
 
 # route 53

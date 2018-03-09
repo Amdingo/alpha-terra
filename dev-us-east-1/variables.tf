@@ -52,8 +52,8 @@ variable "bastion_ami" {
   default     = "ami-cb0df5b6"
 }
 
-variable "bastion_ip" {
-  default = "52.200.118.47"
+variable "bastion_eip_id" {
+  default = "eipalloc-e8bf7de1"
 }
 
 # route 53

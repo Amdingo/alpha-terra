@@ -95,7 +95,7 @@ resource "aws_eip" "nat" {
 # And allocate it to the bastion server
 resource "aws_eip_association" "bastion" {
   instance_id   = "${aws_instance.bastion.id}"
-  allocation_id = "${data.aws_eip.bastion_eip.id}"
+  allocation_id = "${var.bastion_eip_id}"
 }
 
 # Create the NAT Gateway
@@ -418,10 +418,6 @@ resource "aws_alb_listener_rule" "as_http_listener_rule" {
 resource "aws_key_pair" "auth" {
   key_name   = "${var.key_name}"
   public_key = "${var.public_key}"
-}
-
-data "aws_eip" "bastion_eip" {
-  public_ip = "52.200.118.47"
 }
 
 resource "aws_instance" "bastion" {

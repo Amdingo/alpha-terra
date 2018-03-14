@@ -45,7 +45,7 @@ variable "igw_id" {
 }
 
 # amis
-//variable "as_dev_ami" {}
+variable "as_dev_ami" {}
 
 variable "bastion_ami" {
   description = "ami for the bastion image"
@@ -58,36 +58,36 @@ variable "bastion_eip_id" {
 
 # route 53
 variable "domain_name" {default = "alphastack"}
-//variable "sub_domain_name" {default = "terraform"}
+variable "sub_domain_name" {default = "terraform"}
 
 # launch configuration
-//variable "lc_instance_type" {
-//  description = "The instance type used for the AlphaStack launch configuration"
-//  default     = "t2.medium"
-//}
+variable "lc_instance_type" {
+  description = "The instance type used for the AlphaStack launch configuration"
+  default     = "t2.medium"
+}
 
-//# auto-scaling group
-//variable "asg_max" {
-//  description = "Count of maximum servers for the auto-scaling group"
-//  default     = "3"
-//}
-//
-//variable "asg_min" {
-//  description = "Count of minimum servers for the auto-scaling group"
-//  default     = "2"
-//}
-//
-//variable "asg_grace_period" {
-//  description = "Time after instance comes into service before checking health"
-//  default     = "300"
-//}
-//
-//variable "asg_hct" {
-//  description = "Type of Health Check (ELB or EC2)"
-//  default     = "EC2"
-//}
-//
-//variable "asg_capacity" {
-//  description = "The number of Amazon EC2 instances that should be running in the group prior to terraform finishing apply."
-//  default     = "2"
-//}
+# auto-scaling group
+variable "asg_max" {
+  description = "Count of maximum servers for the auto-scaling group"
+  default     = "3"
+}
+
+variable "asg_min" {
+  description = "Count of minimum servers for the auto-scaling group"
+  default     = "2"
+}
+
+variable "asg_grace_period" {
+  description = "Time after instance comes into service before checking health"
+  default     = "300"
+}
+
+variable "asg_hct" {
+  description = "Type of Health Check (ELB or EC2)"
+  default     = "EC2"
+}
+
+variable "asg_capacity" {
+  description = "The number of Amazon EC2 instances that should be running in the group prior to terraform finishing apply."
+  default     = "2"
+}

@@ -10,8 +10,12 @@ output "old_route_table_id" {
   value = "${data.aws_route_table.old_vpc_route_table.id}"
 }
 
-output "route53_id" {
+output "as_route53_id" {
   value = "${data.aws_route53_zone.as_zone.id}"
+}
+
+output "as_net_route53_id" {
+  value = "${data.aws_route53_zone.as_net_zone.id}"
 }
 
 output "certificate_arn" {

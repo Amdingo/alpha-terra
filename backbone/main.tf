@@ -18,6 +18,17 @@ data "aws_acm_certificate" "alphastack" {
   types    = ["AMAZON_ISSUED"]
 }
 
+data "aws_route53_zone" "as_net_zone" {
+  name = "alphastack.net"
+  private_zone = false
+}
+
+data "aws_acm_certificate" "alphastack_net" {
+  domain   = "*.alphastack.net"
+  statuses = ["ISSUED"]
+  types    = ["AMAZON_ISSUED"]
+}
+
 # Uses a VPC provided via variables
 data "aws_vpc" "default" {
   id = "vpc-4b16b330"

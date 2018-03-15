@@ -45,3 +45,11 @@ output "aws_key_pair_id" {
 output "aws_key_pair_name" {
   value = "${aws_key_pair.auth.key_name}"
 }
+
+output "bastion_security_group_id" {
+  value = "${aws_security_group.bastion.id}"
+}
+
+output "private_security_group_id" {
+  value = "${aws_security_group.as_private_sg.id}"
+}

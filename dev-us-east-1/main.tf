@@ -27,85 +27,12 @@ data "aws_security_group" "alb" {
   id = "${data.terraform_remote_state.backbone.alb_security_group_id}"
 }
 
-# Our default security group to access
-# the public instances over SSH
-resource "aws_security_group" "bastion" {
-  name        = "as_prod_bastion"
-  description = "Terraform Bastion Security Group"
-  vpc_id      = "${data.aws_vpc.default.id}"
-
-  tags {
-    Name        = "AlphaStack Bastion Group"
-    AppVersion  = "Beta"
-  }
-
-  # SSH access from anywhere
-  ingress {
-    from_port   = 22
-    to_port     = 22
-    protocol    = "TCP"
-    cidr_blocks = ["0.0.0.0/0"]
-  }
-
-  # outbound internet access
-  egress {
-    from_port   = 0
-    to_port     = 0
-    protocol    = "-1"
-    cidr_blocks = ["0.0.0.0/0"]
-  }
+data "aws_security_group" "private" {
+  id = "${data.terraform_remote_state.backbone.private_security_group_id}"
 }
 
-# Our private security group to access
-# the public instances over SSH and HTTP
-resource "aws_security_group" "as_private_sg" {
-  name        = "AlphaStack Private Security Group"
-  description = "private security group used in the dev terraform example"
-  vpc_id      = "${data.aws_vpc.default.id}"
-
-  tags {
-    Name        = "AlphaStack Private Group"
-    AppVersion  = "Beta"
-  }
-
-  # HTTP access from the vpc
-  ingress {
-    from_port   = 80
-    to_port     = 80
-    protocol    = "TCP"
-    cidr_blocks = ["${var.cidr_prefix}.0.0/16"]
-  }
-
-  # 8000 access from the vpc
-  ingress {
-    from_port   = 8000
-    to_port     = 8000
-    protocol    = "TCP"
-    cidr_blocks = ["${var.cidr_prefix}.0.0/16"]
-  }
-
-  # 4000 access from the vpc
-  ingress {
-    from_port   = 4000
-    to_port     = 4000
-    protocol    = "TCP"
-    cidr_blocks = ["${var.cidr_prefix}.0.0/16"]
-  }
-
-  ingress {
-    from_port = 22
-    to_port   = 22
-    protocol = "TCP"
-    cidr_blocks = ["${var.cidr_prefix}.0.0/16"]
-  }
-
-  # outbound internet access
-  egress {
-    from_port   = 0
-    to_port     = 0
-    protocol    = "-1"
-    cidr_blocks = ["0.0.0.0/0"]
-  }
+data "aws_security_group" "bastion" {
+  id = "${data.terraform_remote_state.backbone.bastion_security_group_id}"
 }
 
 # Application Load Balancer for Web Server
@@ -233,7 +160,7 @@ resource "aws_instance" "bastion" {
   key_name = "${data.terraform_remote_state.backbone.aws_key_pair_id}"
 
   # Our Security group to allow SSH access
-  vpc_security_group_ids = ["${aws_security_group.bastion.id}"]
+  vpc_security_group_ids = ["${data.aws_security_group.bastion.id}"]
 
   # Launches the instance into the default subnet
   subnet_id = "${data.terraform_remote_state.backbone.private_subnet_1_id}"
@@ -252,7 +179,7 @@ resource "aws_launch_configuration" "as_web_lc" {
   name_prefix          = "as_web_lc-"
   image_id             = "${var.as_dev_ami}"
   instance_type        = "${var.lc_instance_type}"
-  security_groups      = ["${aws_security_group.as_private_sg.id}"]
+  security_groups      = ["${data.aws_security_group.private.id}"]
   key_name             = "${data.terraform_remote_state.backbone.aws_key_pair_id}"
 //  user_data            = "${file("userdata")}"
 

@@ -139,40 +139,6 @@ resource "aws_alb_listener_rule" "as_http_listener_rule" {
   priority = 100
 }
 
-resource "aws_instance" "bastion" {
-  # The connection block tells our provisioner how to
-  # communicate with the resource (instance)
-  connection {
-    # The default username for our AMI
-    user = "ubuntu"
-
-    # The connection will use the local SSH agent for authentication.
-  }
-
-  instance_type = "t2.micro"
-
-  # Lookup the correct AMI based on the region
-  # we specified
-  # ami = "${lookup(var.aws_amis, var.aws_region)}"
-  ami = "${var.bastion_ami}"
-
-  # The name of our SSH keypair we created above.
-  key_name = "${data.terraform_remote_state.backbone.aws_key_pair_id}"
-
-  # Our Security group to allow SSH access
-  vpc_security_group_ids = ["${data.aws_security_group.bastion.id}"]
-
-  # Launches the instance into the default subnet
-  subnet_id = "${data.terraform_remote_state.backbone.private_subnet_1_id}"
-
-  # Name it in the tags
-  tags {
-    Name        = "AlphaStack Production Bastion Server"
-    AppVersion  = "Beta"
-  }
-
-}
-
 #launch configuration
 
 resource "aws_launch_configuration" "as_web_lc" {

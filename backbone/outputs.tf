@@ -33,3 +33,15 @@ output "private_subnet_1_id" {
 output "private_subnet_2_id" {
   value = "${aws_subnet.private_2.id}"
 }
+
+output "alb_security_group_id" {
+  value = "${aws_security_group.alb.id}"
+}
+
+output "aws_key_pair_id" {
+  value = "${aws_key_pair.auth.id}"
+}
+
+output "aws_key_pair_name" {
+  value = "${aws_key_pair.auth.key_name}"
+}

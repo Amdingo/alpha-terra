@@ -8,10 +8,6 @@ variable "aws_region" {
   description = "same as parent provider"
 }
 
-variable "alb_id" {
-  description = "application load balancer that will forward traffic"
-}
-
 variable "instance_type" {
   description = "Type of instance to launch, must be minimum of 2 vcpu"
   default = "t2.medium"
@@ -23,10 +19,20 @@ variable "ws_ami" {
 
 variable "key_pair_id" {}
 
-variable "subnet_id" {}
+variable "instance_subnet" {
+  type        = "string"
+  description = "subnet for the websocket instance to be placed into"
+}
 
 variable "security_group_id" {
   description = "private security group id"
 }
 
 variable "tf_access_token" {}
+
+variable "vpc" {}
+
+variable "alb_subnets" {
+  description = "list of subnets for the alb"
+  type        = "list"
+}

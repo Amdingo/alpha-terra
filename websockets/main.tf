@@ -13,8 +13,57 @@ data "terraform_remote_state" "backbone" {
   }
 }
 
-data "aws_lb" "lb" {
-  id = "${var.alb_id}"
+resource "aws_security_group" "ws_alb" {
+  name        = "as_ws_dev_alb"
+  description = "Used in the dev terraform example"
+  vpc_id      = "${var.vpc}"
+
+  tags {
+    Name        = "AlphaStack ALB Group"
+    AppVersion  = "Beta"
+  }
+
+  # HTTP access from anywhere
+  ingress {
+    from_port   = 80
+    to_port     = 80
+    protocol    = "TCP"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+
+  ingress {
+    from_port = 443
+    protocol = "TCP"
+    to_port = 443
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+
+  ingress {
+    from_port = 4000
+    protocol  = "HTTPS"
+    to_port   = 4000
+  }
+
+  # outbound internet access
+  egress {
+    from_port   = 0
+    to_port     = 0
+    protocol    = "-1"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+}
+
+# Application Load Balancer for Socket Server
+resource "aws_lb" "web" {
+  name            = "AlphaStack-SocketServer-LB"
+  internal        = false
+  subnets         = ["${var.alb_subnets}"]
+  security_groups = ["${aws_security_group.ws_alb.id}"]
+
+  tags {
+    Name = "AlphaStack websocket ALB"
+    AppVersion = "Beta"
+  }
 }
 
 resource "aws_instance" "websocket_server" {
@@ -41,11 +90,11 @@ resource "aws_instance" "websocket_server" {
   vpc_security_group_ids = ["${var.security_group_id}"]
 
   # Launches the instance into the default subnet
-  subnet_id = "${var.subnet_id}"
+  subnet_id = "${var.instance_subnet}"
 
   # Name it in the tags
   tags {
-    Name        = "AlphaStack Production Bastion Server"
+    Name        = "AlphaStack Production Websocket Server"
     AppVersion  = "Beta"
   }
 }

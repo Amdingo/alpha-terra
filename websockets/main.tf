@@ -76,7 +76,7 @@ resource "aws_lb" "ws" {
 }
 
 # HTTPS
-resource "aws_lb_listener" "web_https" {
+resource "aws_lb_listener" "ws_https" {
   load_balancer_arn = "${aws_lb.ws.arn}"
   port              = "443"
   protocol          = "HTTPS"
@@ -90,7 +90,7 @@ resource "aws_lb_listener" "web_https" {
 }
 
 # HTTP This points to an NGINX instance that redirs to HTTPS
-resource "aws_lb_listener" "web_http" {
+resource "aws_lb_listener" "ws_http" {
   load_balancer_arn = "${aws_lb.ws.arn}"
   port              = "80"
   protocol          = "HTTP"
@@ -101,8 +101,21 @@ resource "aws_lb_listener" "web_http" {
   }
 }
 
+resource "aws_lb_listener" "ws_https_4000" {
+  load_balancer_arn = "${aws_lb.ws.arn}"
+  port              = "443"
+  protocol          = "HTTPS"
+  ssl_policy        = "ELBSecurityPolicy-2015-05"
+  certificate_arn   = "${local.aws_certificate_arn}"
+
+  default_action {
+    target_group_arn = "${aws_lb_target_group.ws.arn}"
+    type             = "forward"
+  }
+}
+
 resource "aws_lb_target_group" "ws" {
-  name = "web-https-lb-target-group"
+  name = "web-ws-lb-target-group"
   port = "8000"
   protocol = "HTTP"
   vpc_id = "${local.default_vpc}"

@@ -15,7 +15,7 @@ data "terraform_remote_state" "backbone" {
 
 # Uses a VPC provided via variables
 data "aws_vpc" "default" {
-  id = "${data.terraform_remote_state.backbone.aws_vpc.default.id}"
+  id = "${data.terraform_remote_state.backbone.default_vpc_id}"
 }
 
 # The old VPC to peer to

@@ -76,7 +76,7 @@ resource "aws_lb_listener" "web_http" {
 
 resource "aws_lb_target_group" "web_https" {
   name = "web-https-lb-target-group"
-  port = 8000
+  port = "8000"
   protocol = "HTTP"
   vpc_id = "${data.aws_vpc.default.id}"
 
@@ -88,13 +88,13 @@ resource "aws_lb_target_group" "web_https" {
 
 resource "aws_lb_target_group" "web_http" {
   name = "web-http-lb-target-group"
-  port = 80
+  port = "80"
   protocol = "HTTP"
   vpc_id = "${data.aws_vpc.default.id}"
 
   health_check {
     path = "/login"
-    port = 8000
+    port = "8000"
   }
 
   tags {

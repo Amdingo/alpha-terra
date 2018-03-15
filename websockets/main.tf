@@ -49,7 +49,7 @@ resource "aws_security_group" "ws_alb" {
 
   ingress {
     from_port = 4000
-    protocol  = "HTTPS"
+    protocol  = "TCP"
     to_port   = 4000
   }
 

@@ -32,7 +32,4 @@ variable "tf_access_token" {}
 
 variable "vpc" {}
 
-variable "alb_subnets" {
-  description = "list of subnets for the alb"
-  type        = "list"
-}
+

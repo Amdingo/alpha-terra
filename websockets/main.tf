@@ -9,7 +9,7 @@ data "terraform_remote_state" "backbone" {
   backend = "atlas"
   config {
     name         = "AlphaStack/backbone"
-    access_token = "2JCkLM3YbJMXnw.atlasv1.HqlNxgwQMB7HcuJsKoNiSNsGGJZc8phkvZpizyEhrqJioMLlNySBbsBlLVtBAyvuqos"
+    access_token = "${var.tf_access_token}"
   }
 }
 

@@ -28,3 +28,5 @@ variable "subnet_id" {}
 variable "security_group_id" {
   description = "private security group id"
 }
+
+variable "tf_access_token" {}

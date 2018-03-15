@@ -20,17 +20,17 @@ data "aws_acm_certificate" "alphastack" {
 
 # Uses a VPC provided via variables
 data "aws_vpc" "default" {
-  id = "${var.vpc_id}"
+  id = "vpc-4b16b330"
 }
 
 # The old VPC to peer to
 data "aws_vpc" "old" {
-  id = "${var.old_vpc}"
+  id = "vpc-c1c690a4"
 }
 
 # The old VPC's route table that we'll attach the peering route to
 data "aws_route_table" "old_vpc_route_table" {
-  route_table_id = "${var.old_vpc_route_table}"
+  route_table_id = "rtb-98517cfd"
 }
 
 # Sets up the peering connection
@@ -60,7 +60,7 @@ resource "aws_route" "old-to-new-peer" {
 
 # Provides the default route table for the VPC as a resource
 resource "aws_default_route_table" "rt" {
-  default_route_table_id = "${var.route_table_id}"
+  default_route_table_id = "rtb-a223eade"
 
   route {
     cidr_block = "0.0.0.0/0"
@@ -74,7 +74,7 @@ resource "aws_default_route_table" "rt" {
 
 # Create an internet gateway to give our subnet access to the outside world
 data "aws_internet_gateway" "default" {
-  internet_gateway_id = "${var.igw_id}"
+  internet_gateway_id = "igw-5a6bac22"
 }
 
 # Create an EIP for the NAT Gateway that's going to be provided to the private subnets
@@ -87,7 +87,7 @@ resource "aws_eip" "nat" {
 # And allocate it to the bastion server
 resource "aws_eip_association" "bastion" {
   instance_id   = "${aws_instance.bastion.id}"
-  allocation_id = "${var.bastion_eip_id}"
+  allocation_id = "eipalloc-e8bf7de1"
 }
 
 # Create the NAT Gateway
@@ -120,7 +120,7 @@ resource "aws_route_table" "public" {
 # Create dem subnets to launch our instances into
 resource "aws_subnet" "default" {
   vpc_id                  = "${data.aws_vpc.default.id}"
-  cidr_block              = "${var.cidr_prefix}.1.0/24"
+  cidr_block              = "10.20.1.0/24"
   availability_zone       = "us-east-1a"
   map_public_ip_on_launch = true
 
@@ -136,7 +136,7 @@ resource "aws_route_table_association" "pu1" {
 
 resource "aws_subnet" "default_2" {
   vpc_id                  = "${data.aws_vpc.default.id}"
-  cidr_block              = "${var.cidr_prefix}.2.0/24"
+  cidr_block              = "10.20.2.0/24"
   availability_zone       = "us-east-1b"
   map_public_ip_on_launch = true
 
@@ -151,7 +151,7 @@ resource "aws_route_table_association" "pu2" {
 }
 
 resource "aws_subnet" "private_1" {
-  cidr_block              = "${var.cidr_prefix}.3.0/24"
+  cidr_block              = "10.20.3.0/24"
   vpc_id                  = "${data.aws_vpc.default.id}"
   availability_zone       = "us-east-1a"
   map_public_ip_on_launch = false
@@ -167,7 +167,7 @@ resource "aws_route_table_association" "pr1" {
 }
 
 resource "aws_subnet" "private_2" {
-  cidr_block              = "${var.cidr_prefix}.4.0/24"
+  cidr_block              = "10.20.4.0/24"
   vpc_id                  = "${data.aws_vpc.default.id}"
   availability_zone       = "us-east-1b"
   map_public_ip_on_launch = false
@@ -263,7 +263,7 @@ resource "aws_security_group" "as_private_sg" {
     from_port   = 80
     to_port     = 80
     protocol    = "TCP"
-    cidr_blocks = ["${var.cidr_prefix}.0.0/16"]
+    cidr_blocks = ["10.20.0.0/16"]
   }
 
   # 8000 access from the vpc
@@ -271,7 +271,7 @@ resource "aws_security_group" "as_private_sg" {
     from_port   = 8000
     to_port     = 8000
     protocol    = "TCP"
-    cidr_blocks = ["${var.cidr_prefix}.0.0/16"]
+    cidr_blocks = ["10.20.0.0/16"]
   }
 
   # 4000 access from the vpc
@@ -279,21 +279,21 @@ resource "aws_security_group" "as_private_sg" {
     from_port   = 4000
     to_port     = 4000
     protocol    = "TCP"
-    cidr_blocks = ["${var.cidr_prefix}.0.0/16"]
+    cidr_blocks = ["10.20.0.0/16"]
   }
 
   ingress {
     from_port   = 8888
     to_port     = 8888
     protocol    = "TCP"
-    cidr_blocks = ["${var.cidr_prefix}.0.0/16"]
+    cidr_blocks = ["10.20.0.0/16"]
   }
 
   ingress {
     from_port   = 22
     to_port     = 22
     protocol    = "TCP"
-    cidr_blocks = ["${var.cidr_prefix}.0.0/16"]
+    cidr_blocks = ["10.20.0.0/16"]
   }
 
   # outbound internet access
@@ -319,7 +319,7 @@ resource "aws_lb" "web" {
 }
 
 resource "aws_key_pair" "auth" {
-  key_name   = "${var.key_name}"
+  key_name   = "alphastack"
   public_key = "${var.public_key}"
 }
 

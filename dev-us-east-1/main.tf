@@ -20,7 +20,7 @@ data "aws_vpc" "default" {
 
 # The old VPC to peer to
 data "aws_vpc" "old" {
-  id = "${data.terraform_remote_state.backbone.aws_vpc.old.id}"
+  id = "${data.terraform_remote_state.backbone.old_vpc_id}"
 }
 
 # A security group for the ALB so its accessible via HTTP and HTTPS

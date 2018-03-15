@@ -161,6 +161,11 @@ resource "aws_subnet" "private_1" {
   }
 }
 
+resource "aws_route_table_association" "pr1" {
+  route_table_id = "${aws_default_route_table.rt.id}"
+  subnet_id = "${aws_subnet.private_1.id}"
+}
+
 resource "aws_subnet" "private_2" {
   cidr_block              = "${var.cidr_prefix}.4.0/24"
   vpc_id                  = "${data.aws_vpc.default.id}"
@@ -170,6 +175,11 @@ resource "aws_subnet" "private_2" {
   tags {
     Name = "A|S Private 2"
   }
+}
+
+resource "aws_route_table_association" "pr2" {
+  route_table_id = "${aws_default_route_table.rt.id}"
+  subnet_id = "${aws_subnet.private_2.id}"
 }
 
 # A security group for the ALB so its accessible via HTTP and HTTPS

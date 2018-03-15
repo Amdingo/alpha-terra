@@ -23,39 +23,8 @@ data "aws_vpc" "old" {
   id = "${data.terraform_remote_state.backbone.old_vpc_id}"
 }
 
-# A security group for the ALB so its accessible via HTTP and HTTPS
-resource "aws_security_group" "alb" {
-  name        = "terraform_dev_alb"
-  description = "Used in the dev terraform example"
-  vpc_id      = "${data.aws_vpc.default.id}"
-
-  tags {
-    Name        = "AlphaStack ALB Group"
-    AppVersion  = "Beta"
-  }
-
-  # HTTP access from anywhere
-  ingress {
-    from_port   = 80
-    to_port     = 80
-    protocol    = "TCP"
-    cidr_blocks = ["0.0.0.0/0"]
-  }
-
-  ingress {
-    from_port = 443
-    protocol = "TCP"
-    to_port = 443
-    cidr_blocks = ["0.0.0.0/0"]
-  }
-
-  # outbound internet access
-  egress {
-    from_port   = 0
-    to_port     = 0
-    protocol    = "-1"
-    cidr_blocks = ["0.0.0.0/0"]
-  }
+data "aws_security_group" "alb" {
+  id = "${data.terraform_remote_state.backbone.alb_security_group_id}"
 }
 
 # Our default security group to access
@@ -144,7 +113,7 @@ resource "aws_lb" "web" {
   name            = "Beta-AlphaStack-Production"
   internal        = false
   subnets         = ["${data.terraform_remote_state.backbone.public_subnet_1_id}", "${data.terraform_remote_state.backbone.public_subnet_2_id}"]
-  security_groups = ["${aws_security_group.alb.id}"]
+  security_groups = ["${data.terraform_remote_state.backbone.alb_security_group_id}"]
 
   tags {
     Name = "AlphaStack Production ALB"
@@ -243,26 +212,6 @@ resource "aws_alb_listener_rule" "as_http_listener_rule" {
   priority = 100
 }
 
-//resource "aws_elb" "web" {
-//  name = "terraform-dev-elb"
-//
-//  subnets         = ["${data.terraform_remote_state.backbone.private_subnet_1_id}"]
-//  security_groups = ["${aws_security_group.elb.id}"]
-//  instances       = ["${aws_instance.web.id}"]
-//
-//  listener {
-//    instance_port     = 8000
-//    instance_protocol = "TCP"
-//    lb_port           = 80
-//    lb_protocol       = "TCP"
-//  }
-//}
-
-resource "aws_key_pair" "auth" {
-  key_name   = "${var.key_name}"
-  public_key = "${var.public_key}"
-}
-
 resource "aws_instance" "bastion" {
   # The connection block tells our provisioner how to
   # communicate with the resource (instance)
@@ -281,7 +230,7 @@ resource "aws_instance" "bastion" {
   ami = "${var.bastion_ami}"
 
   # The name of our SSH keypair we created above.
-  key_name = "${aws_key_pair.auth.id}"
+  key_name = "${data.terraform_remote_state.backbone.aws_key_pair_id}"
 
   # Our Security group to allow SSH access
   vpc_security_group_ids = ["${aws_security_group.bastion.id}"]
@@ -304,7 +253,7 @@ resource "aws_launch_configuration" "as_web_lc" {
   image_id             = "${var.as_dev_ami}"
   instance_type        = "${var.lc_instance_type}"
   security_groups      = ["${aws_security_group.as_private_sg.id}"]
-  key_name             = "${aws_key_pair.auth.id}"
+  key_name             = "${data.terraform_remote_state.backbone.aws_key_pair_id}"
 //  user_data            = "${file("userdata")}"
 
   lifecycle {

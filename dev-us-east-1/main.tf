@@ -199,7 +199,7 @@ resource "aws_autoscaling_group" "as_asg" {
 # Route53
 #terraform
 resource "aws_route53_record" "sub_domain" {
-  zone_id = "${data.terraform_remote_state.backbone.route53_id}"
+  zone_id = "${data.terraform_remote_state.backbone.as_route53_id}"
   name    = "${var.sub_domain_name}.${var.domain_name}.com"
   type    = "A"
 

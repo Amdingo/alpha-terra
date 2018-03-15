@@ -13,6 +13,15 @@ data "terraform_remote_state" "backbone" {
   }
 }
 
+locals {
+  alb_subnets = [
+    "${data.terraform_remote_state.backbone.public_subnet_1_id}",
+    "${data.terraform_remote_state.backbone.public_subnet_2_id}"
+  ]
+  default_vpc = "${data.terraform_remote_state.backbone.default_vpc_id}"
+  aws_certificate_arn = "${data.terraform_remote_state.backbone.certificate_arn}"
+}
+
 resource "aws_security_group" "ws_alb" {
   name        = "as_ws_dev_alb"
   description = "Used in the dev terraform example"
@@ -54,14 +63,52 @@ resource "aws_security_group" "ws_alb" {
 }
 
 # Application Load Balancer for Socket Server
-resource "aws_lb" "web" {
+resource "aws_lb" "ws" {
   name            = "AlphaStack-SocketServer-LB"
   internal        = false
-  subnets         = ["${var.alb_subnets}"]
+  subnets         = ["${local.alb_subnets}"]
   security_groups = ["${aws_security_group.ws_alb.id}"]
 
   tags {
     Name = "AlphaStack websocket ALB"
+    AppVersion = "Beta"
+  }
+}
+
+# HTTPS
+resource "aws_lb_listener" "web_https" {
+  load_balancer_arn = "${aws_lb.ws.arn}"
+  port              = "443"
+  protocol          = "HTTPS"
+  ssl_policy        = "ELBSecurityPolicy-2015-05"
+  certificate_arn   = "${local.aws_certificate_arn}"
+
+  default_action {
+    target_group_arn = "${aws_lb_target_group.ws.arn}"
+    type             = "forward"
+  }
+}
+
+# HTTP This points to an NGINX instance that redirs to HTTPS
+resource "aws_lb_listener" "web_http" {
+  load_balancer_arn = "${aws_lb.ws.arn}"
+  port              = "80"
+  protocol          = "HTTP"
+
+  default_action {
+    target_group_arn = "${aws_lb_target_group.ws.arn}"
+    type             = "forward"
+  }
+}
+
+resource "aws_lb_target_group" "ws" {
+  name = "web-https-lb-target-group"
+  port = "8000"
+  protocol = "HTTP"
+  vpc_id = "${local.default_vpc}"
+
+  tags {
+    Name = "AlphaStack Production HTTPS"
     AppVersion = "Beta"
   }
 }

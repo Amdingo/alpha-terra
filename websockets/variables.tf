@@ -32,4 +32,4 @@ variable "tf_access_token" {}
 
 variable "vpc" {}
 
-
+variable "ws_sub_domain_name" {}

@@ -24,7 +24,7 @@ locals {
 
 resource "aws_security_group" "ws_alb" {
   name        = "as_ws_dev_alb"
-  description = "Used in the dev terraform example"
+  description = "WebSocket ALB Group: 80, 443, 4000"
   vpc_id      = "${var.vpc}"
 
   tags {
@@ -51,6 +51,7 @@ resource "aws_security_group" "ws_alb" {
     from_port = 4000
     protocol  = "TCP"
     to_port   = 4000
+    cidr_blocks = ["0.0.0.0/0"]
   }
 
   # outbound internet access
@@ -156,5 +157,17 @@ resource "aws_instance" "websocket_server" {
   tags {
     Name        = "AlphaStack Production Websocket Server"
     AppVersion  = "Beta"
+  }
+}
+
+resource "aws_route53_record" "ws_subdomain" {
+  name = "${var.ws_sub_domain_name}"
+  type = "A"
+  zone_id = "${data.terraform_remote_state.backbone.as_net_route53_id}"
+
+  alias {
+    evaluate_target_health = false
+    name = "${aws_lb.ws.dns_name}"
+    zone_id = "${aws_lb.ws.zone_id}"
   }
 }

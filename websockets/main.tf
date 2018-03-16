@@ -160,6 +160,12 @@ resource "aws_instance" "websocket_server" {
   }
 }
 
+resource "aws_lb_target_group_attachment" "ws" {
+  target_group_arn = "${aws_lb_target_group.ws.arn}"
+  target_id = "${aws_instance.websocket_server.id}"
+  port = "4000"
+}
+
 resource "aws_route53_record" "ws_subdomain" {
   name = "${var.ws_sub_domain_name}"
   type = "A"

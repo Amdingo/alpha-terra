@@ -104,7 +104,7 @@ resource "aws_lb_listener" "ws_http" {
 
 resource "aws_lb_listener" "ws_https_4000" {
   load_balancer_arn = "${aws_lb.ws.arn}"
-  port              = "443"
+  port              = "4000"
   protocol          = "HTTPS"
   ssl_policy        = "ELBSecurityPolicy-2015-05"
   certificate_arn   = "${local.aws_certificate_arn}"

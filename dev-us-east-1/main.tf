@@ -37,13 +37,13 @@ data "aws_security_group" "bastion" {
 
 # Application Load Balancer for Web Server
 resource "aws_lb" "web" {
-  name            = "Dev-AS-Production"
+  name            = "Dev-AS"
   internal        = false
   subnets         = ["${data.terraform_remote_state.backbone.public_subnet_1_id}", "${data.terraform_remote_state.backbone.public_subnet_2_id}"]
   security_groups = ["${data.terraform_remote_state.backbone.alb_security_group_id}"]
 
   tags {
-    Name = "Dev-AS Production ALB"
+    Name = "Dev-AS ALB"
     AppVersion = "Dev"
   }
 }
@@ -81,7 +81,7 @@ resource "aws_lb_target_group" "web_https" {
   vpc_id = "${data.aws_vpc.default.id}"
 
   tags {
-    Name = "Dev-AS Production HTTPS"
+    Name = "Dev-AS HTTPS"
     AppVersion = "Dev"
   }
 }
@@ -98,7 +98,7 @@ resource "aws_lb_target_group" "web_http" {
   }
 
   tags {
-    Name = "Dev-AS Production HTTP"
+    Name = "Dev-AS HTTP"
     AppVersion = "Dev"
   }
 }
@@ -181,7 +181,7 @@ resource "aws_autoscaling_group" "as_asg" {
   tags = [
     {
       key                 = "Name"
-      value               = "Dev-AS Production Web/API Instance"
+      value               = "Dev-AS Web/API Instance"
       propagate_at_launch = true
     },
     {

@@ -37,14 +37,14 @@ data "aws_security_group" "bastion" {
 
 # Application Load Balancer for Web Server
 resource "aws_lb" "web" {
-  name            = "Beta-AlphaStack-Production"
+  name            = "Dev-AS-Production"
   internal        = false
   subnets         = ["${data.terraform_remote_state.backbone.public_subnet_1_id}", "${data.terraform_remote_state.backbone.public_subnet_2_id}"]
   security_groups = ["${data.terraform_remote_state.backbone.alb_security_group_id}"]
 
   tags {
-    Name = "AlphaStack Production ALB"
-    AppVersion = "Beta"
+    Name = "Dev-AS Production ALB"
+    AppVersion = "Dev"
   }
 }
 
@@ -76,30 +76,30 @@ resource "aws_lb_listener" "web_http" {
 
 resource "aws_lb_target_group" "web_https" {
   name = "web-https-lb-target-group"
-  port = "8000"
+  port = 8000
   protocol = "HTTP"
   vpc_id = "${data.aws_vpc.default.id}"
 
   tags {
-    Name = "AlphaStack Production HTTPS"
-    AppVersion = "Beta"
+    Name = "Dev-AS Production HTTPS"
+    AppVersion = "Dev"
   }
 }
 
 resource "aws_lb_target_group" "web_http" {
   name = "web-http-lb-target-group"
-  port = "80"
+  port = 80
   protocol = "HTTP"
   vpc_id = "${data.aws_vpc.default.id}"
 
   health_check {
     path = "/login"
-    port = "8000"
+    port = 8000
   }
 
   tags {
-    Name = "AlphaStack Production HTTP"
-    AppVersion = "Beta"
+    Name = "Dev-AS Production HTTP"
+    AppVersion = "Dev"
   }
 }
 
@@ -181,12 +181,12 @@ resource "aws_autoscaling_group" "as_asg" {
   tags = [
     {
       key                 = "Name"
-      value               = "AlphaStack Production Web/API Instance"
+      value               = "Dev-AS Production Web/API Instance"
       propagate_at_launch = true
     },
     {
       key                 = "AppVersion"
-      value               = "Beta"
+      value               = "Dev"
       propagate_at_launch = true
     }
   ]
@@ -209,4 +209,3 @@ resource "aws_route53_record" "sub_domain" {
     evaluate_target_health = false
   }
 }
-

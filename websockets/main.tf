@@ -117,7 +117,7 @@ resource "aws_lb_listener" "ws_https_4000" {
 
 resource "aws_lb_target_group" "ws" {
   name = "web-ws-lb-target-group"
-  port = "8000"
+  port = "4000"
   protocol = "HTTP"
   vpc_id = "${local.default_vpc}"
 

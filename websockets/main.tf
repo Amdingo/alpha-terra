@@ -163,7 +163,7 @@ resource "aws_instance" "websocket_server" {
 resource "aws_route53_record" "ws_subdomain" {
   name = "${var.ws_sub_domain_name}"
   type = "A"
-  zone_id = "${data.terraform_remote_state.backbone.as_net_route53_id}"
+  zone_id = "${data.terraform_remote_state.backbone.as_route53_id}"
 
   alias {
     evaluate_target_health = false

@@ -195,8 +195,8 @@ resource "aws_route_table_association" "pr2" {
 
 # A security group for the ALB so its accessible via HTTP and HTTPS
 resource "aws_security_group" "alb" {
-  name        = "terraform_dev_alb"
-  description = "Used in the dev terraform example"
+  name        = "as_backbone_dev_alb"
+  description = "Used in the AlphaStack backbone for routing to web servers"
   vpc_id      = "${data.aws_vpc.default.id}"
 
   tags {

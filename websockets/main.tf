@@ -155,6 +155,10 @@ resource "aws_instance" "websocket_server" {
   # Launches the instance into the default subnet
   subnet_id = "${var.instance_subnet}"
 
+  lifecycle {
+    create_before_destroy = true
+  }
+
   # Name it in the tags
   tags {
     Name        = "AlphaStack Production Websocket Server"

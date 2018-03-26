@@ -5,21 +5,23 @@ provider "aws" {
   secret_key = "${var.aws_secret_key}"
 }
 
-data "terraform_remote_state" "backbone" {
+//--------------------------------------------------------------------
+// Workspace Data
+data "terraform_remote_state" "alpha_stack_backbone" {
   backend = "atlas"
   config {
-    name         = "AlphaStack/backbone"
-    access_token = "${var.tf_access_token}"
+    address = "app.terraform.io"
+    name    = "AlphaStack/backbone"
   }
 }
 
 locals {
   alb_subnets = [
-    "${data.terraform_remote_state.backbone.public_subnet_1_id}",
-    "${data.terraform_remote_state.backbone.public_subnet_2_id}"
+    "${data.terraform_remote_state.alpha_stack_backbone.public_subnet_1_id}",
+    "${data.terraform_remote_state.alpha_stack_backbone.public_subnet_2_id}"
   ]
-  default_vpc = "${data.terraform_remote_state.backbone.default_vpc_id}"
-  aws_certificate_arn = "${data.terraform_remote_state.backbone.certificate_arn}"
+  default_vpc = "${data.terraform_remote_state.alpha_stack_backbone.default_vpc_id}"
+  aws_certificate_arn = "${data.terraform_remote_state.alpha_stack_backbone.certificate_arn}"
 }
 
 resource "aws_security_group" "ws_alb" {
@@ -169,7 +171,7 @@ resource "aws_lb_target_group_attachment" "ws" {
 resource "aws_route53_record" "ws_subdomain" {
   name = "${var.ws_sub_domain_name}"
   type = "A"
-  zone_id = "${data.terraform_remote_state.backbone.as_route53_id}"
+  zone_id = "${data.terraform_remote_state.alpha_stack_backbone.as_route53_id}"
 
   alias {
     evaluate_target_health = false

@@ -10,8 +10,8 @@ provider "aws" {
 data "terraform_remote_state" "alpha_stack_backbone" {
   backend = "atlas"
   config {
-    address = "app.terraform.io"
     name    = "AlphaStack/backbone"
+    access_token = "${var.tf_access_token}"
   }
 }
 
@@ -166,7 +166,7 @@ resource "aws_launch_configuration" "as_web_lc" {
   instance_type        = "${var.lc_instance_type}"
   security_groups      = ["${data.aws_security_group.private.id}"]
   key_name             = "${data.terraform_remote_state.alpha_stack_backbone.aws_key_pair_id}"
-  user_data            = "${file("userdata")}"
+//  user_data            = "${file("userdata")}"
 
   lifecycle {
     create_before_destroy = true

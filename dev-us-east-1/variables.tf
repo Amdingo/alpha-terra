@@ -91,3 +91,5 @@ variable "asg_capacity" {
   description = "The number of Amazon EC2 instances that should be running in the group prior to terraform finishing apply."
   default     = "2"
 }
+
+variable "tf_access_token" {}

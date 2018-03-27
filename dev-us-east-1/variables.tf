@@ -101,3 +101,5 @@ variable "clairity_sub_domain" {}
 variable "rds_security_group" {}
 
 variable "alphastack_net_certificate_arn" {}
+
+variable "clairity_instance_type" {}

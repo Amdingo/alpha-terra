@@ -23,7 +23,7 @@ module "clairity" {
   aws_lb_subnets = ["${data.terraform_remote_state.alpha_stack_backbone.public_subnet_1_id}", "${data.terraform_remote_state.alpha_stack_backbone.public_subnet_2_id}"]
   aws_region = "us-east-1"
   clairity_ami = "${var.clairity_ami}"
-  instance_type = "t2.medium"
+  instance_type = "${var.clairity_instance_type}"
   key_name = "alphastack"
   public_key = "${var.public_key}"
   rds_security_group = "${var.rds_security_group}"

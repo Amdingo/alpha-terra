@@ -16,21 +16,21 @@ data "terraform_remote_state" "alpha_stack_backbone" {
 }
 
 // Modules
-//module "clairity" {
-//  source  = "app.terraform.io/AlphaStack/clairity/aws"
-//  version = "0.1.1-alpha"
-//
-//  aws_lb_subnets = ["${data.terraform_remote_state.alpha_stack_backbone.public_subnet_1_id}", "${data.terraform_remote_state.alpha_stack_backbone.public_subnet_2_id}"]
-//  aws_region = "us-east-1"
-//  clairity_ami = "${var.clairity_clairity_ami}"
-//  instance_type = "t2.medium"
-//  key_name = "alphastack"
-//  public_key = "${var.clairity_public_key}"
-//  rds_security_group = "${var.clairity_rds_security_group}"
-//  sub_domain = "${var.clairity_sub_domain}"
-//  subnet = "${data.terraform_remote_state.alpha_stack_backbone.private_subnet_1_id}"
-//  vpc = "${data.terraform_remote_state.alpha_stack_backbone.default_vpc_id}"
-//}
+module "clairity" {
+  source  = "app.terraform.io/AlphaStack/clairity/aws"
+  version = "0.1.1-alpha"
+
+  aws_lb_subnets = ["${data.terraform_remote_state.alpha_stack_backbone.public_subnet_1_id}", "${data.terraform_remote_state.alpha_stack_backbone.public_subnet_2_id}"]
+  aws_region = "us-east-1"
+  clairity_ami = "${var.clairity_ami}"
+  instance_type = "t2.medium"
+  key_name = "alphastack"
+  public_key = "${var.public_key}"
+  rds_security_group = "${var.rds_security_group}"
+  sub_domain = "${var.clairity_sub_domain}"
+  subnet = "${data.terraform_remote_state.alpha_stack_backbone.private_subnet_1_id}"
+  vpc = "${data.terraform_remote_state.alpha_stack_backbone.default_vpc_id}"
+}
 
 # Uses a VPC provided via variables
 data "aws_vpc" "default" {

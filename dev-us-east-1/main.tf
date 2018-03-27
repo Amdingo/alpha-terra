@@ -30,7 +30,7 @@ module "clairity" {
   sub_domain = "${var.clairity_sub_domain}"
   subnet = "${data.terraform_remote_state.alpha_stack_backbone.private_subnet_1_id}"
   vpc = "${data.terraform_remote_state.alpha_stack_backbone.default_vpc_id}"
-  alphastack_net_arn = "${var.alphastack_net_certificate_arn}"
+  alphastack_net_certificate_arn = "${var.alphastack_net_certificate_arn}"
 }
 
 # Uses a VPC provided via variables

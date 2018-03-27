@@ -18,7 +18,7 @@ data "terraform_remote_state" "alpha_stack_backbone" {
 // Modules
 module "clairity" {
   source  = "app.terraform.io/AlphaStack/clairity/aws"
-  version = "0.1.6-alpha"
+  version = "0.1.7-alpha"
 
   aws_lb_subnets = ["${data.terraform_remote_state.alpha_stack_backbone.public_subnet_1_id}", "${data.terraform_remote_state.alpha_stack_backbone.public_subnet_2_id}"]
   aws_region = "us-east-1"
@@ -30,6 +30,7 @@ module "clairity" {
   sub_domain = "${var.clairity_sub_domain}"
   subnet = "${data.terraform_remote_state.alpha_stack_backbone.private_subnet_1_id}"
   vpc = "${data.terraform_remote_state.alpha_stack_backbone.default_vpc_id}"
+  alphastack_net_arn = "${var.alphastack_net_certificate_arn}"
 }
 
 # Uses a VPC provided via variables

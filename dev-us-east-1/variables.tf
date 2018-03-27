@@ -99,3 +99,5 @@ variable "clairity_ami" {}
 variable "clairity_sub_domain" {}
 
 variable "rds_security_group" {}
+
+variable "alphastack_net_certificate_arn" {}

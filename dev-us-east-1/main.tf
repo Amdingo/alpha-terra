@@ -18,7 +18,7 @@ data "terraform_remote_state" "alpha_stack_backbone" {
 // Modules
 module "clairity" {
   source  = "app.terraform.io/AlphaStack/clairity/aws"
-  version = "0.1.9-alpha"
+  version = "0.1.10-alpha"
 
   aws_lb_subnets = ["${data.terraform_remote_state.alpha_stack_backbone.public_subnet_1_id}", "${data.terraform_remote_state.alpha_stack_backbone.public_subnet_2_id}"]
   aws_region = "us-east-1"

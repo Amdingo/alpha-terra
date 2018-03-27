@@ -10,8 +10,8 @@ provider "aws" {
 data "terraform_remote_state" "alpha_stack_backbone" {
   backend = "atlas"
   config {
-    address = "app.terraform.io"
     name    = "AlphaStack/backbone"
+    access_token = "${var.tf_access_token}"
   }
 }
 

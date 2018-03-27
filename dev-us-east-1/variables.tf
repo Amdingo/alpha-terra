@@ -93,3 +93,9 @@ variable "asg_capacity" {
 }
 
 variable "tf_access_token" {}
+
+variable "clairity_ami" {}
+
+variable "clairity_sub_domain" {}
+
+variable "rds_security_group" {}

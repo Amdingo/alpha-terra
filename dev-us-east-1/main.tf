@@ -28,7 +28,7 @@ module "clairity" {
   public_key = "${var.public_key}"
   rds_security_group = "${var.rds_security_group}"
   sub_domain = "${var.clairity_sub_domain}"
-  subnet = "${data.terraform_remote_state.alpha_stack_backbone.public_subnet_1_id}"
+  subnet = "${data.terraform_remote_state.alpha_stack_backbone.private_subnet_1_id}"
   vpc = "${data.terraform_remote_state.alpha_stack_backbone.default_vpc_id}"
   alphastack_net_certificate_arn = "${var.alphastack_net_certificate_arn}"
 }

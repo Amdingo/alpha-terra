@@ -18,7 +18,7 @@ data "terraform_remote_state" "alpha_stack_backbone" {
 // Modules
 module "clairity" {
   source  = "app.terraform.io/AlphaStack/clairity/aws"
-  version = "0.1.11-alpha"
+  version = "0.1.12-alpha"
 
   aws_lb_subnets = ["${data.terraform_remote_state.alpha_stack_backbone.public_subnet_1_id}", "${data.terraform_remote_state.alpha_stack_backbone.public_subnet_2_id}"]
   aws_region = "us-east-1"
@@ -61,6 +61,7 @@ resource "aws_lb" "web" {
   internal        = false
   subnets         = ["${data.terraform_remote_state.alpha_stack_backbone.public_subnet_1_id}", "${data.terraform_remote_state.alpha_stack_backbone.public_subnet_2_id}"]
   security_groups = ["${data.terraform_remote_state.alpha_stack_backbone.alb_security_group_id}"]
+  idle_timeout    = 410
 
   tags {
     Name = "Dev-AS ALB"

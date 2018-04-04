@@ -8,16 +8,17 @@ provider "aws" {
 //--------------------------------------------------------------------
 // Workspace Data
 data "terraform_remote_state" "alpha_stack_backbone" {
-  backend = "atlas"
+  backend = "s3"
   config {
-    name    = "AlphaStack/backbone"
-    access_token = "${var.tf_access_token}"
+    bucket = "alpha-terra-state-repository",
+    key    = "backbone/terraform.tfstate",
+    region = "us-east-1"
   }
 }
 
 // Modules
 module "clairity" {
-  source  = "app.terraform.io/AlphaStack/clairity/aws"
+  source  = "../modules/terraform-aws-clairity"
   version = "0.1.12-alpha"
 
   aws_lb_subnets = ["${data.terraform_remote_state.alpha_stack_backbone.public_subnet_1_id}", "${data.terraform_remote_state.alpha_stack_backbone.public_subnet_2_id}"]

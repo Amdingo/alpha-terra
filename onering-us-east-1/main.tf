@@ -5,11 +5,12 @@ provider "aws" {
   secret_key = "${var.aws_secret_key}"
 }
 
-data "terraform_remote_state" "backbone" {
-  backend = "atlas"
+data "terraform_remote_state" "alpha_stack_backbone" {
+  backend = "s3"
   config {
-    name         = "AlphaStack/backbone"
-    access_token = "2JCkLM3YbJMXnw.atlasv1.HqlNxgwQMB7HcuJsKoNiSNsGGJZc8phkvZpizyEhrqJioMLlNySBbsBlLVtBAyvuqos"
+    bucket = "alpha-terra-state-repository",
+    key    = "backbone/terraform.tfstate",
+    region = "us-east-1"
   }
 }
 

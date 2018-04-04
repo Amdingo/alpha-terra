@@ -10,9 +10,9 @@ provider "aws" {
 data "terraform_remote_state" "alpha_stack_backbone" {
   backend = "s3"
   config {
-    name    = "alpha-terra-state-repository"
-    key     = "backbone/terraform.tfstate"
-    region  = "us-east-1"
+    bucket = "alpha-terra-state-repository",
+    key    = "backbone/terraform.tfstate",
+    region = "us-east-1"
   }
 }
 

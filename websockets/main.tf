@@ -5,21 +5,24 @@ provider "aws" {
   secret_key = "${var.aws_secret_key}"
 }
 
-data "terraform_remote_state" "backbone" {
-  backend = "atlas"
+//--------------------------------------------------------------------
+// Workspace Data
+data "terraform_remote_state" "alpha_stack_backbone" {
+  backend = "s3"
   config {
-    name         = "AlphaStack/backbone"
-    access_token = "${var.tf_access_token}"
+    name    = "alpha-terra-state-repository"
+    key     = "backbone/terraform.tfstate"
+    region  = "us-east-1"
   }
 }
 
 locals {
   alb_subnets = [
-    "${data.terraform_remote_state.backbone.public_subnet_1_id}",
-    "${data.terraform_remote_state.backbone.public_subnet_2_id}"
+    "${data.terraform_remote_state.alpha_stack_backbone.public_subnet_1_id}",
+    "${data.terraform_remote_state.alpha_stack_backbone.public_subnet_2_id}"
   ]
-  default_vpc = "${data.terraform_remote_state.backbone.default_vpc_id}"
-  aws_certificate_arn = "${data.terraform_remote_state.backbone.certificate_arn}"
+  default_vpc = "${data.terraform_remote_state.alpha_stack_backbone.default_vpc_id}"
+  aws_certificate_arn = "${data.terraform_remote_state.alpha_stack_backbone.certificate_arn}"
 }
 
 resource "aws_security_group" "ws_alb" {
@@ -153,6 +156,10 @@ resource "aws_instance" "websocket_server" {
   # Launches the instance into the default subnet
   subnet_id = "${var.instance_subnet}"
 
+  lifecycle {
+    create_before_destroy = true
+  }
+
   # Name it in the tags
   tags {
     Name        = "AlphaStack Production Websocket Server"
@@ -169,7 +176,7 @@ resource "aws_lb_target_group_attachment" "ws" {
 resource "aws_route53_record" "ws_subdomain" {
   name = "${var.ws_sub_domain_name}"
   type = "A"
-  zone_id = "${data.terraform_remote_state.backbone.as_route53_id}"
+  zone_id = "${data.terraform_remote_state.alpha_stack_backbone.as_route53_id}"
 
   alias {
     evaluate_target_health = false

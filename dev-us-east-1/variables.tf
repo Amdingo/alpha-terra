@@ -91,3 +91,15 @@ variable "asg_capacity" {
   description = "The number of Amazon EC2 instances that should be running in the group prior to terraform finishing apply."
   default     = "2"
 }
+
+variable "tf_access_token" {}
+
+variable "clairity_ami" {}
+
+variable "clairity_sub_domain" {}
+
+variable "rds_security_group" {}
+
+variable "alphastack_net_certificate_arn" {}
+
+variable "clairity_instance_type" {}

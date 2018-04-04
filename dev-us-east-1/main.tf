@@ -5,46 +5,67 @@ provider "aws" {
   secret_key = "${var.aws_secret_key}"
 }
 
-data "terraform_remote_state" "backbone" {
+//--------------------------------------------------------------------
+// Workspace Data
+data "terraform_remote_state" "alpha_stack_backbone" {
   backend = "atlas"
   config {
-    name         = "AlphaStack/backbone"
-    access_token = "2JCkLM3YbJMXnw.atlasv1.HqlNxgwQMB7HcuJsKoNiSNsGGJZc8phkvZpizyEhrqJioMLlNySBbsBlLVtBAyvuqos"
+    name    = "AlphaStack/backbone"
+    access_token = "${var.tf_access_token}"
   }
+}
+
+// Modules
+module "clairity" {
+  source  = "app.terraform.io/AlphaStack/clairity/aws"
+  version = "0.1.12-alpha"
+
+  aws_lb_subnets = ["${data.terraform_remote_state.alpha_stack_backbone.public_subnet_1_id}", "${data.terraform_remote_state.alpha_stack_backbone.public_subnet_2_id}"]
+  aws_region = "us-east-1"
+  clairity_ami = "${var.clairity_ami}"
+  instance_type = "${var.clairity_instance_type}"
+  key_name = "alphastack"
+  public_key = "${var.public_key}"
+  rds_security_group = "${var.rds_security_group}"
+  sub_domain = "${var.clairity_sub_domain}"
+  subnet = "${data.terraform_remote_state.alpha_stack_backbone.public_subnet_1_id}"
+  vpc = "${data.terraform_remote_state.alpha_stack_backbone.default_vpc_id}"
+  alphastack_net_certificate_arn = "${var.alphastack_net_certificate_arn}"
 }
 
 # Uses a VPC provided via variables
 data "aws_vpc" "default" {
-  id = "${data.terraform_remote_state.backbone.default_vpc_id}"
+  id = "${data.terraform_remote_state.alpha_stack_backbone.default_vpc_id}"
 }
 
 # The old VPC to peer to
 data "aws_vpc" "old" {
-  id = "${data.terraform_remote_state.backbone.old_vpc_id}"
+  id = "${data.terraform_remote_state.alpha_stack_backbone.old_vpc_id}"
 }
 
 data "aws_security_group" "alb" {
-  id = "${data.terraform_remote_state.backbone.alb_security_group_id}"
+  id = "${data.terraform_remote_state.alpha_stack_backbone.alb_security_group_id}"
 }
 
 data "aws_security_group" "private" {
-  id = "${data.terraform_remote_state.backbone.private_security_group_id}"
+  id = "${data.terraform_remote_state.alpha_stack_backbone.private_security_group_id}"
 }
 
 data "aws_security_group" "bastion" {
-  id = "${data.terraform_remote_state.backbone.bastion_security_group_id}"
+  id = "${data.terraform_remote_state.alpha_stack_backbone.bastion_security_group_id}"
 }
 
 # Application Load Balancer for Web Server
 resource "aws_lb" "web" {
-  name            = "Beta-AlphaStack-Production"
+  name            = "Dev-AS"
   internal        = false
-  subnets         = ["${data.terraform_remote_state.backbone.public_subnet_1_id}", "${data.terraform_remote_state.backbone.public_subnet_2_id}"]
-  security_groups = ["${data.terraform_remote_state.backbone.alb_security_group_id}"]
+  subnets         = ["${data.terraform_remote_state.alpha_stack_backbone.public_subnet_1_id}", "${data.terraform_remote_state.alpha_stack_backbone.public_subnet_2_id}"]
+  security_groups = ["${data.terraform_remote_state.alpha_stack_backbone.alb_security_group_id}"]
+  idle_timeout    = 410
 
   tags {
-    Name = "AlphaStack Production ALB"
-    AppVersion = "Beta"
+    Name = "Dev-AS ALB"
+    AppVersion = "Dev"
   }
 }
 
@@ -54,7 +75,7 @@ resource "aws_lb_listener" "web_https" {
   port              = "443"
   protocol          = "HTTPS"
   ssl_policy        = "ELBSecurityPolicy-2015-05"
-  certificate_arn   = "${data.terraform_remote_state.backbone.certificate_arn}"
+  certificate_arn   = "${data.terraform_remote_state.alpha_stack_backbone.certificate_arn}"
 
   default_action {
     target_group_arn = "${aws_lb_target_group.web_https.arn}"
@@ -81,8 +102,8 @@ resource "aws_lb_target_group" "web_https" {
   vpc_id = "${data.aws_vpc.default.id}"
 
   tags {
-    Name = "AlphaStack Production HTTPS"
-    AppVersion = "Beta"
+    Name = "Dev-AS HTTPS"
+    AppVersion = "Dev"
   }
 }
 
@@ -98,8 +119,8 @@ resource "aws_lb_target_group" "web_http" {
   }
 
   tags {
-    Name = "AlphaStack Production HTTP"
-    AppVersion = "Beta"
+    Name = "Dev-AS HTTP"
+    AppVersion = "Dev"
   }
 }
 
@@ -146,7 +167,7 @@ resource "aws_launch_configuration" "as_web_lc" {
   image_id             = "${var.as_dev_ami}"
   instance_type        = "${var.lc_instance_type}"
   security_groups      = ["${data.aws_security_group.private.id}"]
-  key_name             = "${data.terraform_remote_state.backbone.aws_key_pair_id}"
+  key_name             = "${data.terraform_remote_state.alpha_stack_backbone.aws_key_pair_id}"
 //  user_data            = "${file("userdata")}"
 
   lifecycle {
@@ -172,8 +193,8 @@ resource "aws_autoscaling_group" "as_asg" {
     "${aws_lb_target_group.web_https.arn}"
   ]
 
-  vpc_zone_identifier = ["${data.terraform_remote_state.backbone.private_subnet_1_id}",
-    "${data.terraform_remote_state.backbone.private_subnet_2_id}",
+  vpc_zone_identifier = ["${data.terraform_remote_state.alpha_stack_backbone.private_subnet_1_id}",
+    "${data.terraform_remote_state.alpha_stack_backbone.private_subnet_2_id}",
   ]
 
   launch_configuration = "${aws_launch_configuration.as_web_lc.name}"
@@ -181,12 +202,12 @@ resource "aws_autoscaling_group" "as_asg" {
   tags = [
     {
       key                 = "Name"
-      value               = "AlphaStack Production Web/API Instance"
+      value               = "Dev-AS Web/API Instance"
       propagate_at_launch = true
     },
     {
       key                 = "AppVersion"
-      value               = "Beta"
+      value               = "Dev"
       propagate_at_launch = true
     }
   ]
@@ -199,7 +220,7 @@ resource "aws_autoscaling_group" "as_asg" {
 # Route53
 #terraform
 resource "aws_route53_record" "sub_domain" {
-  zone_id = "${data.terraform_remote_state.backbone.as_route53_id}"
+  zone_id = "${data.terraform_remote_state.alpha_stack_backbone.as_route53_id}"
   name    = "${var.sub_domain_name}.${var.domain_name}.com"
   type    = "A"
 
@@ -209,4 +230,3 @@ resource "aws_route53_record" "sub_domain" {
     evaluate_target_health = false
   }
 }
-

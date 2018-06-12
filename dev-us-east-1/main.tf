@@ -17,21 +17,21 @@ data "terraform_remote_state" "alpha_stack_backbone" {
 }
 
 // Modules
-module "clairity" {
-  source  = "../modules/terraform-aws-clairity"
+module "backend" {
+  source  = "../modules/terraform-aws-backend"
   version = "0.1.12-alpha"
 
   aws_lb_subnets = ["${data.terraform_remote_state.alpha_stack_backbone.public_subnet_1_id}", "${data.terraform_remote_state.alpha_stack_backbone.public_subnet_2_id}"]
   aws_region = "us-east-1"
-  clairity_ami = "${var.clairity_ami}"
-  instance_type = "${var.clairity_instance_type}"
-  key_name = "alphastack"
+  backend_ami = "${var.backend_ami}"
+  instance_type = "${var.backend_instance_type}"
+  key_name = "example-app"
   public_key = "${var.public_key}"
   rds_security_group = "${var.rds_security_group}"
-  sub_domain = "${var.clairity_sub_domain}"
+  sub_domain = "${var.backend_sub_domain}"
   subnet = "${data.terraform_remote_state.alpha_stack_backbone.public_subnet_1_id}"
   vpc = "${data.terraform_remote_state.alpha_stack_backbone.default_vpc_id}"
-  alphastack_net_certificate_arn = "${var.alphastack_net_certificate_arn}"
+  example-app_net_certificate_arn = "${var.example-app_net_certificate_arn}"
 }
 
 # Uses a VPC provided via variables
@@ -139,7 +139,7 @@ resource "aws_alb_listener_rule" "as_https_listener_rule" {
   listener_arn = "${aws_lb_listener.web_https.arn}"
   "condition" {
     field = "host-header"
-    values = ["terraform.alphastack.com"]
+    values = ["terraform.example-app.com"]
   }
   "action" {
     target_group_arn = "${aws_lb_target_group.web_https.arn}"
@@ -152,7 +152,7 @@ resource "aws_alb_listener_rule" "as_http_listener_rule" {
   listener_arn = "${aws_lb_listener.web_http.arn}"
   "condition" {
     field = "host-header"
-    values = ["terraform.alphastack.com"]
+    values = ["terraform.example-app.com"]
   }
   "action" {
     target_group_arn = "${aws_lb_target_group.web_http.arn}"

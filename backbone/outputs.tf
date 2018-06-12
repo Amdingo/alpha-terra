@@ -19,7 +19,7 @@ output "as_net_route53_id" {
 }
 
 output "certificate_arn" {
-  value = "${data.aws_acm_certificate.alphastack.arn}"
+  value = "${data.aws_acm_certificate.example-app.arn}"
 }
 
 output "public_subnet_1_id" {

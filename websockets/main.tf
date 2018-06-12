@@ -135,7 +135,7 @@ resource "aws_instance" "websocket_server" {
   # communicate with the resource (instance)
   connection {
     # The default username for our AMI
-    user = "alphastack"
+    user = "example-app"
 
     # The connection will use the local SSH agent for authentication.
   }
@@ -164,6 +164,7 @@ resource "aws_instance" "websocket_server" {
   tags {
     Name        = "AlphaStack Production Websocket Server"
     AppVersion  = "Beta"
+    DDMonitored = "true"
   }
 }
 

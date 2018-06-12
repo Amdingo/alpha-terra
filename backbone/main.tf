@@ -5,26 +5,26 @@ provider "aws" {
   secret_key = "${var.aws_secret_key}"
 }
 
-# Provide the alphastack.com zone for reference later
+# Provide the example-app.com zone for reference later
 data "aws_route53_zone" "as_zone" {
-  name = "alphastack.com"
+  name = "example-app.com"
   private_zone = false
 }
 
 # Provides the AWS Certificate for use by the ALB
-data "aws_acm_certificate" "alphastack" {
-  domain   = "*.alphastack.com"
+data "aws_acm_certificate" "example-app" {
+  domain   = "*.example-app.com"
   statuses = ["ISSUED"]
   types    = ["AMAZON_ISSUED"]
 }
 
 data "aws_route53_zone" "as_net_zone" {
-  name = "alphastack.net"
+  name = "example-app.net"
   private_zone = false
 }
 
-data "aws_acm_certificate" "alphastack_net" {
-  domain   = "*.alphastack.net"
+data "aws_acm_certificate" "example-app_net" {
+  domain   = "*.example-app.net"
   statuses = ["ISSUED"]
   types    = ["AMAZON_ISSUED"]
 }
@@ -196,11 +196,11 @@ resource "aws_route_table_association" "pr2" {
 # A security group for the ALB so its accessible via HTTP and HTTPS
 resource "aws_security_group" "alb" {
   name        = "as_backbone_dev_alb"
-  description = "Used in the AlphaStack backbone for routing to web servers"
+  description = "Used in the example-app backbone for routing to web servers"
   vpc_id      = "${data.aws_vpc.default.id}"
 
   tags {
-    Name        = "AlphaStack ALB Group"
+    Name        = "example-app ALB Group"
     AppVersion  = "Beta"
   }
 
@@ -236,7 +236,7 @@ resource "aws_security_group" "bastion" {
   vpc_id      = "${data.aws_vpc.default.id}"
 
   tags {
-    Name        = "AlphaStack Bastion Group"
+    Name        = "example-app Bastion Group"
     AppVersion  = "Beta"
   }
 
@@ -260,12 +260,12 @@ resource "aws_security_group" "bastion" {
 # Our private security group to access
 # the public instances over SSH and HTTP
 resource "aws_security_group" "as_private_sg" {
-  name        = "AlphaStack Private Security Group"
+  name        = "example-app Private Security Group"
   description = "allows traffic from within the VPC"
   vpc_id      = "${data.aws_vpc.default.id}"
 
   tags {
-    Name        = "AlphaStack Private Group"
+    Name        = "example-app Private Group"
     AppVersion  = "Beta"
   }
 
@@ -318,19 +318,19 @@ resource "aws_security_group" "as_private_sg" {
 
 # Application Load Balancer for Web Server
 resource "aws_lb" "web" {
-  name            = "AlphaStack-WebServer-LB"
+  name            = "example-app-WebServer-LB"
   internal        = false
   subnets         = ["${aws_subnet.default.id}", "${aws_subnet.default_2.id}"]
   security_groups = ["${aws_security_group.alb.id}"]
 
   tags {
-    Name = "AlphaStack WebServer ALB"
+    Name = "example-app WebServer ALB"
     AppVersion = "Beta"
   }
 }
 
 resource "aws_key_pair" "auth" {
-  key_name   = "alphastack"
+  key_name   = "example-app"
   public_key = "${var.public_key}"
 }
 
@@ -362,7 +362,7 @@ resource "aws_instance" "bastion" {
 
   # Name it in the tags
   tags {
-    Name        = "AlphaStack Production Bastion Server"
+    Name        = "example-app Production Bastion Server"
     AppVersion  = "Beta"
   }
 

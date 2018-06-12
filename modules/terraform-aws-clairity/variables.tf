@@ -21,7 +21,7 @@ variable "aws_lb_subnets" {
 
 variable "sub_domain" {
   type = "string"
-  description = "<sub_domain>-a-s.alphastack.net"
+  description = "<sub_domain>-a-s.<example>.net"
 }
 
 variable "rds_security_group" {
@@ -41,7 +41,6 @@ variable "instance_type" {
 variable "key_name" {
   type = "string"
   description = "keypair used to connect to the clairity instance"
-  default = "alphastack"
 }
 
-variable "alphastack_net_certificate_arn" {}
+variable "example-app_net_certificate_arn" {}

@@ -5,7 +5,7 @@ variable "aws_access_key" {}
 variable "aws_secret_key" {}
 
 variable "key_name" {
-  default = "example-app"
+  default = "exampleapp"
   description = "Name of AWS key pair"
 }
 
@@ -49,5 +49,5 @@ variable "bastion_eip_id" {
 
 # route 53
 variable "domain_name" {
-  default = "example-app"
+  default = "exampleapp"
 }

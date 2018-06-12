@@ -118,7 +118,7 @@ resource "aws_alb_listener_rule" "as_https_listener_rule" {
   listener_arn = "${aws_lb_listener.web_https.arn}"
   "condition" {
     field = "host-header"
-    values = ["terraform.example-app.com"]
+    values = ["terraform.exampleapp.com"]
   }
   "action" {
     target_group_arn = "${aws_lb_target_group.web_https.arn}"
@@ -131,7 +131,7 @@ resource "aws_alb_listener_rule" "as_http_listener_rule" {
   listener_arn = "${aws_lb_listener.web_http.arn}"
   "condition" {
     field = "host-header"
-    values = ["terraform.example-app.com"]
+    values = ["terraform.exampleapp.com"]
   }
   "action" {
     target_group_arn = "${aws_lb_target_group.web_http.arn}"

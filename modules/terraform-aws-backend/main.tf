@@ -1,7 +1,7 @@
 data "terraform_remote_state" "backbone" {
   backend = "atlas"
   config {
-    name         = "example-app/backbone"
+    name         = "exampleapp/backbone"
     access_token = "2JCkLM3YbJMXnw.atlasv1.HqlNxgwQMB7HcuJsKoNiSNsGGJZc8phkvZpizyEhrqJioMLlNySBbsBlLVtBAyvuqos"
   }
 }
@@ -87,7 +87,7 @@ resource "aws_lb_listener" "backend_https" {
   port              = "443"
   protocol          = "HTTPS"
   ssl_policy        = "ELBSecurityPolicy-2015-05"
-  certificate_arn   = "${var.example-app_net_certificate_arn}"
+  certificate_arn   = "${var.exampleapp_net_certificate_arn}"
 
   default_action {
     target_group_arn = "${aws_lb_target_group.backend.arn}"
@@ -131,7 +131,7 @@ resource "aws_lb_target_group_attachment" "backend" {
 resource "aws_instance" "backend" {
 
   connection {
-    user = "example-app"
+    user = "exampleapp"
   }
 
   key_name               = "${var.key_name}"
@@ -156,14 +156,14 @@ resource "aws_security_group_rule" "backend_to_rds" {
   type                     = "ingress"
 }
 
-//resource "aws_route53_record" "net_sub_domain" {
-//  zone_id = "${data.terraform_remote_state.backbone.as_net_route53_id}"
-//  name    = "${var.sub_domain}-a-s.db.example-app.net"
-//  type    = "A"
-//
-//  alias {
-//    evaluate_target_health = false
-//    name    = "${aws_lb.backend.dns_name}"
-//    zone_id = "${aws_lb.backend.zone_id}"
-//  }
-//}
+resource "aws_route53_record" "net_sub_domain" {
+  zone_id = "${data.terraform_remote_state.backbone.as_net_route53_id}"
+  name    = "${var.sub_domain}-a-s.db.exampleapp.net"
+  type    = "A"
+
+  alias {
+    evaluate_target_health = false
+    name    = "${aws_lb.backend.dns_name}"
+    zone_id = "${aws_lb.backend.zone_id}"
+  }
+}

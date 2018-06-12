@@ -5,7 +5,7 @@ variable "aws_access_key" {}
 variable "aws_secret_key" {}
 
 variable "key_name" {
-  default = "example-app"
+  default = "exampleapp"
   description = "Name of AWS key pair"
 }
 
@@ -51,7 +51,7 @@ variable "bastion_eip_id" {
 
 # route 53
 variable "domain_name" {
-  default = "example-app"
+  default = "exampleapp"
 }
 
 variable "sub_domain_name" {
@@ -60,7 +60,7 @@ variable "sub_domain_name" {
 
 # launch configuration
 variable "lc_instance_type" {
-  description = "The instance type used for the example-app launch configuration"
+  description = "The instance type used for the exampleapp launch configuration"
   default     = "t2.medium"
 }
 
@@ -98,6 +98,6 @@ variable "backend_sub_domain" {}
 
 variable "rds_security_group" {}
 
-variable "example-app_net_certificate_arn" {}
+variable "exampleapp_net_certificate_arn" {}
 
 variable "backend_instance_type" {}

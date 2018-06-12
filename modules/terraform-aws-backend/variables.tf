@@ -1,5 +1,5 @@
-variable "clairity_ami" {
-  description = "the ami to use for clairity"
+variable "backend_ami" {
+  description = "the ami to use for backend"
 }
 
 variable "public_key" {
@@ -11,7 +11,7 @@ variable "aws_region" {
 }
 
 variable "subnet" {
-  description = "id of subnet for clairity instance"
+  description = "id of subnet for backend instance"
 }
 
 variable "aws_lb_subnets" {
@@ -30,17 +30,17 @@ variable "rds_security_group" {
 }
 
 variable "vpc" {
-  description = "ID of the VPC to place the clairity instance in"
+  description = "ID of the VPC to place the backend instance in"
 }
 
 variable "instance_type" {
-  description = "instance type to use for clairity server"
+  description = "instance type to use for backend server"
   default = "c4.xlarge"
 }
 
 variable "key_name" {
   type = "string"
-  description = "keypair used to connect to the clairity instance"
+  description = "keypair used to connect to the backend instance"
 }
 
-variable "example-app_net_certificate_arn" {}
+variable "exampleapp_net_certificate_arn" {}

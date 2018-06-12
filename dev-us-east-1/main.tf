@@ -25,13 +25,13 @@ module "backend" {
   aws_region = "us-east-1"
   backend_ami = "${var.backend_ami}"
   instance_type = "${var.backend_instance_type}"
-  key_name = "example-app"
+  key_name = "exampleapp"
   public_key = "${var.public_key}"
   rds_security_group = "${var.rds_security_group}"
   sub_domain = "${var.backend_sub_domain}"
   subnet = "${data.terraform_remote_state.alpha_stack_backbone.public_subnet_1_id}"
   vpc = "${data.terraform_remote_state.alpha_stack_backbone.default_vpc_id}"
-  example-app_net_certificate_arn = "${var.example-app_net_certificate_arn}"
+  exampleapp_net_certificate_arn = "${var.exampleapp_net_certificate_arn}"
 }
 
 # Uses a VPC provided via variables
@@ -139,7 +139,7 @@ resource "aws_alb_listener_rule" "as_https_listener_rule" {
   listener_arn = "${aws_lb_listener.web_https.arn}"
   "condition" {
     field = "host-header"
-    values = ["terraform.example-app.com"]
+    values = ["terraform.exampleapp.com"]
   }
   "action" {
     target_group_arn = "${aws_lb_target_group.web_https.arn}"
@@ -152,7 +152,7 @@ resource "aws_alb_listener_rule" "as_http_listener_rule" {
   listener_arn = "${aws_lb_listener.web_http.arn}"
   "condition" {
     field = "host-header"
-    values = ["terraform.example-app.com"]
+    values = ["terraform.exampleapp.com"]
   }
   "action" {
     target_group_arn = "${aws_lb_target_group.web_http.arn}"

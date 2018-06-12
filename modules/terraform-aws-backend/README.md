@@ -10,13 +10,13 @@
 ### resources
 * instance security group
   * ingress 8888
-* instance with clairity accessible on port 8888
+* instance with backend accessible on port 8888
 * security group rule allowing 3306 access to the rds instance
 
 
 ```
-module "clairity" {
-  source  = "app.terraform.io/AlphaStack/clairity/aws"
+module "backend" {
+  source  = "app.terraform.io/AlphaStack/backend/aws"
   version = "0.1.3-alpha"
 
   # insert required variables here

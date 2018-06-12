@@ -12,8 +12,22 @@ provides multiple environments with a backbone infrastructure.
   * bastion instance for access to servers
   * application load balancer to public subnets
   * alb security group
-    * opens 443 and 80 to 0.0.0.0
+    * opens 443 and 80
   * app security group
     * opens application ports to intra-vpc traffic
   * bastion security group
     * opens 22 to set IPs
+
+#### backend module
+  * backend security group
+    * opens 22 8888
+  * alb security group
+    * opens 80 443
+  * alb
+    * listener and target group
+    * attaches backend instance to target group
+  * backend instance
+  * security group rule attached to rds security group
+    * allows 3306 from the backend sg to the rds sg
+  * route53 record
+    * allows subdomain provided for backend
